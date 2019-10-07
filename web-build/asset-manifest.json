@@ -1,0 +1,22 @@
+{
+  "app.js": "/static/js/bundle.js",
+  "app.2007821e2978fea32425.map": "/2007821e2978fea32425.map",
+  "fonts/AntDesign.ttf": "/./fonts/AntDesign.ttf",
+  "fonts/Entypo.ttf": "/./fonts/Entypo.ttf",
+  "fonts/Feather.ttf": "/./fonts/Feather.ttf",
+  "fonts/FontAwesome.ttf": "/./fonts/FontAwesome.ttf",
+  "fonts/FontAwesome5_Brands.ttf": "/./fonts/FontAwesome5_Brands.ttf",
+  "fonts/FontAwesome5_Solid.ttf": "/./fonts/FontAwesome5_Solid.ttf",
+  "fonts/Foundation.ttf": "/./fonts/Foundation.ttf",
+  "fonts/Ionicons.ttf": "/./fonts/Ionicons.ttf",
+  "fonts/Lato-Bold.ttf": "/./fonts/Lato-Bold.ttf",
+  "fonts/Lato-Regular.ttf": "/./fonts/Lato-Regular.ttf",
+  "fonts/MaterialCommunityIcons.ttf": "/./fonts/MaterialCommunityIcons.ttf",
+  "fonts/MaterialIcons.ttf": "/./fonts/MaterialIcons.ttf",
+  "fonts/SimpleLineIcons.ttf": "/./fonts/SimpleLineIcons.ttf",
+  "index.html": "/index.html",
+  "manifest.json": "/manifest.json",
+  "precache-manifest.60144109bbe17651b1eb050c29e4f6f4.js": "/precache-manifest.60144109bbe17651b1eb050c29e4f6f4.js",
+  "service-worker.js": "/service-worker.js",
+  "static/media/back-icon-mask.png": "/static/media/back-icon-mask.6165c9d7.png"
+}
