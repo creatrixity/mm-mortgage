@@ -26,6 +26,7 @@ export const FormField = ({
         </View>
         <Input
           style={styles.formFieldInput}
+          selectTextOnFocus
           onChange={(e: any) => {
             handleChange(e);
           }}

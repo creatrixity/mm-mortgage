@@ -4,7 +4,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import { fromRight } from 'react-navigation-transitions';
 
-import { WizardForm, FormField } from '../components';
+import { BreadcrumbBar, WizardForm, FormField } from '../components';
 import { MortgageCalculatorWizardResults } from '../screens';
 
 const breadcrumbs = [
@@ -20,41 +20,37 @@ const breadcrumbs = [
   }
 ];
 
-const IndexView = ({ navigation }) => {
-  const steps = [
-    {
-      title: 'Step 1',
-      isActive: true
-    },
-    {
-      title: 'Step 2',
-      isActive: false
-    },
-    {
-      title: 'Step 3',
-      isActive: false
-    },
-    {
-      title: 'See Results',
-      isActive: false
-    }
-  ];
-
+const createCalcWizardView = ({
+  navigation,
+  submitLabel,
+  activeStep = 1,
+  submitAction = 'ResultsView',
+  keyboardType = 'default',
+  fieldOpts = {
+    key: 'avgLoanSize',
+    label: 'What is your Average Loan Size?'
+  }
+}) => {
   return (
     <WizardForm
-      breadcrumbs={breadcrumbs}
-      wizardSteps={steps}
-      handleBreadcrumbPress={location => navigation.push(location)}
-      onProceed={() => navigation.push('BPSView')}
+      activeStep={activeStep}
+      handleWizardStepPress={() => {}}
+      submitLabel={submitLabel}
+      onProceed={() => navigation.push(submitAction)}
     >
       <CalculatorContext.Consumer>
         {([state, dispatch]: any) => {
           return (
             <FormField
-              type={'number-pad'}
-              value={state.expectedRevenue}
+              type={keyboardType as any}
+              value={state[fieldOpts.key]}
+              label={fieldOpts.label}
               handleChange={e =>
-                dispatch({ type: 'expectedRevenue', value: e.target.value })
+                dispatch({
+                  type: 'VALUE_UPDATE',
+                  key: fieldOpts.key,
+                  value: e.target.value
+                })
               }
             />
           );
@@ -64,154 +60,83 @@ const IndexView = ({ navigation }) => {
   );
 };
 
-const BPSView = ({ navigation }) => {
-  const steps = [
-    {
-      title: 'Step 1',
-      isActive: false
+const WizardNavigator = createStackNavigator(
+  {
+    IndexView: {
+      screen: ({ navigation }) =>
+        createCalcWizardView({
+          navigation,
+          activeStep: 1,
+          submitLabel: 'Proceed to Step 2',
+          submitAction: 'BPSView',
+          fieldOpts: {
+            key: 'expectedRevenue',
+            label: 'How much money do you want to make?'
+          }
+        })
     },
-    {
-      title: 'Step 2',
-      isActive: true
+
+    BPSView: {
+      screen: ({ navigation }) =>
+        createCalcWizardView({
+          navigation,
+          activeStep: 2,
+          submitLabel: 'Proceed to Step 3',
+          submitAction: 'LoanSizeView',
+          fieldOpts: {
+            key: 'BPSRequired',
+            label: 'How many BPS do you want to make?'
+          }
+        })
     },
-    {
-      title: 'Step 3',
-      isActive: false
+
+    LoanSizeView: {
+      screen: ({ navigation }) =>
+        createCalcWizardView({
+          navigation,
+          activeStep: 3,
+          submitLabel: 'View Results'
+        })
     },
-    {
-      title: 'See Results',
-      isActive: false
+
+    ResultsView: {
+      screen: ({ ...props }) => <MortgageCalculatorWizardResults {...props} />
     }
-  ];
+  },
+  {
+    initialRouteName: 'IndexView',
+    headerMode: 'none',
+    transitionConfig: () => fromRight()
+  }
+);
 
-  return (
-    <WizardForm
-      breadcrumbs={breadcrumbs}
-      handleBreadcrumbPress={location => navigation.push(location)}
-      submitLabel={'Proceed to Step 3'}
-      wizardSteps={steps}
-      onProceed={() => navigation.push('LoanSizeView')}
-    >
-      <CalculatorContext.Consumer>
-        {([state, dispatch]: any) => {
-          return (
-            <FormField
-              type={'number-pad'}
-              value={state.bpsRequired}
-              label={'How many BPS do you want to make?'}
-              handleChange={e =>
-                dispatch({ type: 'expectedRevenue', value: e.target.value })
-              }
-            />
-          );
-        }}
-      </CalculatorContext.Consumer>
-    </WizardForm>
-  );
-};
-
-const LoanSizeView = ({ navigation }) => {
-  const steps = [
-    {
-      title: 'Step 1',
-      isActive: false
-    },
-    {
-      title: 'Step 2',
-      isActive: false
-    },
-    {
-      title: 'Step 3',
-      isActive: true
-    },
-    {
-      title: 'See Results',
-      isActive: false
-    }
-  ];
-
-  return (
-    <WizardForm
-      breadcrumbs={breadcrumbs}
-      handleBreadcrumbPress={location => navigation.push(location)}
-      submitLabel={'Complete now'}
-      wizardSteps={steps}
-      onProceed={() => navigation.push('ResultsView')}
-    >
-      <CalculatorContext.Consumer>
-        {([state, dispatch]: any) => {
-          return (
-            <FormField
-              type={'number-pad'}
-              value={state.bpsRequired}
-              label={'What is your Average Loan Size?'}
-              handleChange={e =>
-                dispatch({ type: 'expectedRevenue', value: e.target.value })
-              }
-            />
-          );
-        }}
-      </CalculatorContext.Consumer>
-    </WizardForm>
-  );
-};
+const WizardNavigatorContainer = createAppContainer(WizardNavigator);
 
 export const MortgageCalculatorWizard = ({ navigation }) => {
-  const WizardNavigator = createStackNavigator(
-    {
-      IndexView: {
-        screen: ({ ...props }) => (
-          <IndexView parentNavigation={navigation} {...props} />
-        )
-      },
-
-      BPSView: {
-        screen: ({ ...props }) => (
-          <BPSView parentNavigation={navigation} {...props} />
-        )
-      },
-
-      LoanSizeView: {
-        screen: ({ ...props }) => (
-          <LoanSizeView parentNavigation={navigation} {...props} />
-        )
-      },
-
-      ResultsView: {
-        screen: ({ ...props }) => (
-          <MortgageCalculatorWizardResults
-            parentNavigation={navigation}
-            {...props}
-          />
-        )
-      }
-    },
-    {
-      initialRouteName: 'IndexView',
-      headerMode: 'none',
-      transitionConfig: () => fromRight()
-    }
-  );
-
-  const WizardNavigatorContainer = createAppContainer(WizardNavigator);
-
   return (
     <CalculatorContext.Provider value={useReducer(reducer, initialState)}>
+      <BreadcrumbBar
+        breadcrumbs={breadcrumbs}
+        onBreadcrumbPress={location => navigation.push(location)}
+      />
+
       <WizardNavigatorContainer />
     </CalculatorContext.Provider>
   );
 };
 
 const initialState: any = {
-  expectedRevenue: 0
+  expectedRevenue: 0,
+  BPSRequired: 0,
+  avgLoanSize: 0
 };
 
 const reducer = (state = initialState, action): any => {
   switch (action.type) {
-    case 'expectedRevenue':
+    case 'VALUE_UPDATE':
       return {
         ...state,
-        expectedRevenue: action.value
+        [action.key]: action.value
       };
 
     default:

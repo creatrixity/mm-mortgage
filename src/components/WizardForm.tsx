@@ -3,18 +3,21 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import { Button, Form, Text } from 'native-base';
 
 import { padTowards } from '../utils';
-import { BreadcrumbBar, WizardBar } from '../components';
+import { WizardBar } from '../components';
 
 const steps = [
   {
+    id: 1,
     title: 'Step 1',
-    isActive: true
+    isActive: false
   },
   {
+    id: 2,
     title: 'Step 2',
     isActive: false
   },
   {
+    id: 3,
     title: 'Step 3',
     isActive: false
   }
@@ -23,23 +26,21 @@ const steps = [
 export const WizardForm = ({
   title = 'Find the value of activities for a loan.',
   children,
-  breadcrumbs,
   hasSubmit = true,
+  activeStep = 1,
   submitLabel = 'Proceed to Step 2',
   wizardSteps = steps,
-  handleBreadcrumbPress = (location: string) => {},
+  handleWizardStepPress = (location: string) => {},
   onProceed = () => {}
 }) => {
   return (
     <Fragment>
-      <BreadcrumbBar
-        breadcrumbs={breadcrumbs}
-        onBreadcrumbPress={handleBreadcrumbPress}
+      <WizardBar
+        activeStep={activeStep}
+        steps={wizardSteps}
+        onWizardStepPress={handleWizardStepPress}
       />
-      <WizardBar steps={wizardSteps} />
-      <ScrollView
-        contentContainerStyle={{ paddingVertical: 20, height: '100%' }}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.wizardFormContainer}>
           <Text style={styles.wizardFormTitle}>{title}</Text>
 
@@ -68,6 +69,8 @@ const styles = StyleSheet.create({
   wizardFormTitle: {
     fontFamily: 'Lato_bold'
   },
+
+  scrollContainer: { paddingVertical: 20, height: '100%' },
 
   formSubmitContainer: {
     position: 'absolute',

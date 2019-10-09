@@ -6,18 +6,7 @@ import { padTowards } from '../utils';
 import { BreadcrumbBar, FormField, WizardBar, WizardForm } from '../components';
 import custom from '../../native-base-theme/variables/commonColor';
 
-const breadcrumbs = [
-  {
-    title: 'Mortgage Tools',
-    isActive: false,
-    location: 'Home'
-  },
-  {
-    title: 'Lead Activity',
-    isActive: true,
-    location: 'MortgageCalculatorWizard'
-  }
-];
+import { CalculatorContext } from './MortgageCalculatorWizard';
 
 const results = [
   {
@@ -69,104 +58,112 @@ const results = [
   }
 ];
 
-export const MortgageCalculatorWizardResults = ({ parentNavigation }) => {
-  const steps = [
-    {
-      title: 'Step 1',
-      isActive: false
-    },
-    {
-      title: 'Step 2',
-      isActive: false
-    },
-    {
-      title: 'Step 3',
-      isActive: false
-    },
-    {
-      title: 'See Results',
-      isActive: true
-    }
-  ];
-
+export const MortgageCalculatorWizardResults = ({}) => {
   return (
     <WizardForm
       title={'These are the figures you want'}
-      breadcrumbs={breadcrumbs}
       hasSubmit={false}
-      wizardSteps={steps}
-      handleBreadcrumbPress={location => parentNavigation.push(location)}
+      wizardSteps={[]}
+      handleWizardStepPress={location => location}
     >
-      <List
-        style={{ flex: 1 }}
-        dataArray={results}
-        keyExtractor={(item, index) => index.toString()}
-        renderRow={({ desc, figure, title }) => (
-          <ListItem
-            style={{ marginLeft: 0, paddingBottom: 0, borderBottomWidth: 0 }}
-          >
-            <Body>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View
-                  style={{
-                    width: 64,
-                    height: 64,
-                    marginRight: 8,
-                    borderWidth: 1,
-                    borderColor: custom.grayLight,
-                    borderRadius: 500,
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontFamily: 'Lato_bold',
-                      color: custom.brandPrimary
-                    }}
-                  >
-                    {figure}
-                  </Text>
-                </View>
-                <View style={{ flexDirection: 'column', width: '100%' }}>
-                  <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <Text
-                      style={{
-                        fontFamily: 'Lato_bold',
-                        color: custom.grayDarker,
-                        marginBottom: 4,
-                        fontSize: 12,
-                        flexGrow: 0.8,
-                        width: 0
-                      }}
-                    >
-                      {title}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row'
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: custom.gray,
-                        fontSize: 12,
-                        width: 0,
-                        flexGrow: 0.7
-                      }}
-                    >
-                      {desc}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </Body>
-          </ListItem>
-        )}
-      />
+      <CalculatorContext.Consumer>
+        {([{ expectedRevenue, BPSRequired, avgLoanSize }, dispatch]: any) => {
+          const userResults = [
+            {
+              figure: `$${expectedRevenue}`,
+              title: 'Targeted Income',
+              desc: 'Annual income goal you set for yourself'
+            },
+            {
+              figure: BPSRequired,
+              title: 'Current BPS you make',
+              desc: 'Average blended BPS paid'
+            },
+            {
+              figure: `$${avgLoanSize}`,
+              title: 'Your Average Loan Size',
+              desc: 'Pull your OWN data '
+            }
+          ];
+
+          return (
+            <List
+              style={{ flex: 1 }}
+              dataArray={userResults.concat(results)}
+              keyExtractor={({}, index) => index.toString()}
+              renderRow={({ desc, figure, title }) => (
+                <ListItem style={styles.listItem}>
+                  <Body>
+                    <View style={styles.resultContainer}>
+                      <View style={styles.resultFigure}>
+                        <Text style={styles.resultFigureText}>{figure}</Text>
+                      </View>
+                      <View style={styles.resultBody}>
+                        <View style={styles.resultHeadingContainer}>
+                          <Text style={styles.resultHeading}>{title}</Text>
+                        </View>
+                        <View style={styles.resultDescContainer}>
+                          <Text style={styles.resultDesc}>{desc}</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </Body>
+                </ListItem>
+              )}
+            />
+          );
+        }}
+      </CalculatorContext.Consumer>
     </WizardForm>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  listItem: {
+    marginLeft: 0,
+    paddingBottom: 0,
+    borderBottomWidth: 0
+  },
+
+  resultContainer: { flexDirection: 'row', alignItems: 'center' },
+
+  resultHeadingContainer: { flex: 1, flexDirection: 'row' },
+
+  resultFigure: {
+    width: 64,
+    height: 64,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: custom.grayLight,
+    borderRadius: 500,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
+  resultFigureText: {
+    fontFamily: 'Lato_bold',
+    color: custom.brandPrimary
+  },
+
+  resultBody: { flexDirection: 'column', width: '100%' },
+
+  resultHeading: {
+    fontFamily: 'Lato_bold',
+    color: custom.grayDarker,
+    marginBottom: 4,
+    fontSize: 12,
+    flexGrow: 0.8,
+    width: 0
+  },
+
+  resultDescContainer: {
+    flexDirection: 'row'
+  },
+
+  resultDesc: {
+    color: custom.gray,
+    fontSize: 12,
+    width: 0,
+    flexGrow: 0.7
+  }
+});

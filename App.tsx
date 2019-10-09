@@ -26,7 +26,7 @@ export default function App() {
       MortgageCalculatorWizard: { screen: MortgageCalculatorWizard }
     },
     {
-      initialRouteName: 'Home',
+      initialRouteName: 'MortgageCalculatorWizard',
       headerMode: 'none',
       transitionConfig: () => fromRight()
     }
